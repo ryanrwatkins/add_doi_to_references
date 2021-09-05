@@ -1,0 +1,53 @@
+// This script will take references and add the unique DOI for each to them.  It uses the CrossRef API to get them, so it is not 100% perfect 
+// but it is really good and this is  easier than looking each one up.  It adds the HTML link version of the DOI, but if you just want 
+//  the number as text you can remove the HTML tags. Start by putting all your references in a Google Sheet, with each reference being in a cell
+// going down a single collumn (for instance, A1 thru A100 with 100 references going down).  
+
+function getDOI() {
+ 
+// set the variarible to read your Google sheet file and the appropriate sheet within the file 
+var spreadsheet = SpreadsheetApp.openByUrl("GOOGLE SHEET URL").getSheetByName("SHEET NAME");
+
+//for loop set for the number of rows with references that  you  want to add DOIs to
+for(var i=1; i<106;i++)  
+  {  
+    
+    // use a try/catch since sometimes the API through  back an error
+    try{
+    var doicell = i + ", D"  // collumn where HTML references with DOI will go
+    var refcell = "A" + i   // column with references
+    var ref = spreadsheet.getRange(refcell).getValue();   // Get each individual references from the cells
+    
+      if (ref != null){
+          
+          // add reference to end of query at Crossref API
+          var crossref = "https://api.crossref.org/works?query.bibliographic=" + ref;
+          var crossref = encodeURI(crossref);
+          
+          // now we fetch the JSON and then parse it down to get to the first DOI result
+          var response = UrlFetchApp.fetch(crossref);
+          var data = JSON.parse(response.getContentText());
+
+              //check if DOI exist by looking in the JSON file
+          
+              if (data["message"]["items"][0]["DOI"] != null) {
+              doi = data["message"]["items"][0]["DOI"];
+              doi = "https://doi.org/" + doi;
+              doi = "<a href=\'" + doi + "\' target=\'_blank\'>" + doi + "</a><p>";  // if you  don't want the HTML, you can take the tags out
+              
+              } 
+              else {doi = "";}  
+              }
+          
+}catch(e){
+    Logger.log("error");
+}
+
+// now we add that doi in the column B cells for the row we are doing in this loop
+    var range = spreadsheet.getRange("B"+i);
+    range.setValue(doi);
+    Logger.log(JSON.stringify(doi));
+
+}
+
+  }
