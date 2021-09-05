@@ -1,7 +1,8 @@
 // This script will take references and add the unique DOI for each to them.  It uses the CrossRef API to get them, so it is not 100% perfect 
 // but it is really good and this is  easier than looking each one up.  It adds the HTML link version of the DOI, but if you just want 
 //  the number as text you can remove the HTML tags. Start by putting all your references in a Google Sheet, with each reference being in a cell
-// going down a single collumn (for instance, A1 thru A100 with 100 references going down).  
+// going down a single collumn (for instance, A1 thru A100 with 100 references going down). Then go to Tools (in Google Sheets) and open the Script Editor to
+// the script below.
 
 function getDOI() {
  
